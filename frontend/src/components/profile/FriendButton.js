@@ -10,14 +10,14 @@ import { connect } from 'react-redux';
 import { addFriend, removeFriend, getFriends } from '../../redux/actions/dataActions';
 
 export class FriendButton extends Component {
-  getFriends = () => {
-    this.props.getFriends(this.props.handle);
-  };
   alreadyFriends = () => {
-    let myHandle = this.props.user.credentials.handle
+    const myHandle = this.props.user.credentials.handle
+    const friends = this.props.getFriends(myHandle)
+    console.log(myHandle)
+    console.log(friends)
     if (
-      this.props.getFriends(myHandle) &&
-      this.props.getFriends(myHandle).find(
+      friends &&
+      friends.find(
         (friendHandle) => friendHandle === this.props.handle
       )
     )
