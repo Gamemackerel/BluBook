@@ -18,3 +18,5 @@ export const UNLIKE_SCREAM = 'UNLIKE_SCREAM';
 export const DELETE_SCREAM = 'DELETE_SCREAM';
 export const POST_SCREAM = 'POST_SCREAM';
 export const SUBMIT_COMMENT = 'SUBMIT_COMMENT';
+export const ADD_FRIEND = 'ADD_FRIEND';
+export const REMOVE_FRIEND = 'REMOVE_FRIEND';

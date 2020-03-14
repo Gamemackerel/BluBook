@@ -7,51 +7,51 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 // REdux
 import { connect } from 'react-redux';
-import { likeScream, unlikeScream } from '../../redux/actions/dataActions';
+import { addFriend, removeFriend } from '../../redux/actions/dataActions';
 
-export class friendButton extends Component {
-  likedScream = () => {
+export class FriendButton extends Component {
+  alreadyFriends = () => {
     if (
       this.props.user.friends &&
       this.props.user.friends.find(
-        (like) => like.screamId === this.props.screamId
+        (friendHandle) => friendHandle === this.props.handle
       )
     )
       return true;
     else return false;
   };
-  likeScream = () => {
-    this.props.likeScream(this.props.screamId);
+  addFriend = () => {
+    this.props.addFriend(this.props.handle);
   };
-  unlikeScream = () => {
-    this.props.unlikeScream(this.props.screamId);
+  removeFriend = () => {
+    this.props.removeFriend(this.props.handle);
   };
   render() {
     const { authenticated } = this.props.user;
-    const friendButton = !authenticated ? (
+    const FriendButton = !authenticated ? (
       <Link to="/login">
         <MyButton tip="Like">
           <FavoriteBorder color="primary" />
         </MyButton>
       </Link>
-    ) : this.likedScream() ? (
-      <MyButton tip="Undo like" onClick={this.unlikeScream}>
+    ) : this.alreadyFriends() ? (
+      <MyButton tip="Undo like" onClick={this.removeFriend}>
         <FavoriteIcon color="primary" />
       </MyButton>
     ) : (
-      <MyButton tip="Like" onClick={this.likeScream}>
+      <MyButton tip="Like" onClick={this.addFriend}>
         <FavoriteBorder color="primary" />
       </MyButton>
     );
-    return friendButton;
+    return FriendButton;
   }
 }
 
-friendButton.propTypes = {
+FriendButton.propTypes = {
   user: PropTypes.object.isRequired,
-  screamId: PropTypes.string.isRequired,
-  likeScream: PropTypes.func.isRequired,
-  unlikeScream: PropTypes.func.isRequired
+  handle: PropTypes.string.isRequired,
+  addFriend: PropTypes.func.isRequired,
+  removeFriend: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -59,11 +59,11 @@ const mapStateToProps = (state) => ({
 });
 
 const mapActionsToProps = {
-  likeScream,
-  unlikeScream
+  addFriend,
+  removeFriend
 };
 
 export default connect(
   mapStateToProps,
   mapActionsToProps
-)(friendButton);
+)(FriendButton);

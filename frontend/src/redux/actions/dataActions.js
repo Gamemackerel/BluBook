@@ -10,7 +10,9 @@ import {
   LOADING_UI,
   SET_SCREAM,
   STOP_LOADING_UI,
-  SUBMIT_COMMENT
+  SUBMIT_COMMENT,
+  ADD_FRIEND,
+  REMOVE_FRIEND
 } from '../types';
 import axios from 'axios';
 
@@ -83,6 +85,30 @@ export const unlikeScream = (screamId) => (dispatch) => {
     .then((res) => {
       dispatch({
         type: UNLIKE_SCREAM,
+        payload: res.data
+      });
+    })
+    .catch((err) => console.log(err));
+};
+// add a friend
+export const addFriend = (handle) => (dispatch) => {
+  axios
+    .post(`/user/${handle}/addfriend`)
+    .then((res) => {
+      dispatch({
+        type: ADD_FRIEND,
+        payload: res.data
+      });
+    })
+    .catch((err) => console.log(err));
+};
+// remove friend
+export const removeFriend = (handle) => (dispatch) => {
+  axios
+    .post(`/user/${handle}/removefriend`)
+    .then((res) => {
+      dispatch({
+        type: REMOVE_FRIEND,
         payload: res.data
       });
     })

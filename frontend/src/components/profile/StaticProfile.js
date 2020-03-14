@@ -12,6 +12,8 @@ import LocationOn from '@material-ui/icons/LocationOn';
 import LinkIcon from '@material-ui/icons/Link';
 import CalendarToday from '@material-ui/icons/CalendarToday';
 
+import FriendButton from './FriendButton';
+
 const styles = (theme) => ({
   ...theme
 });
@@ -57,6 +59,7 @@ const StaticProfile = (props) => {
               <hr />
             </Fragment>
           )}
+          <FriendButton handle={handle}/>
           <CalendarToday color="primary" />{' '}
           <span>Joined {dayjs(createdAt).format('MMM YYYY')}</span>
         </div>

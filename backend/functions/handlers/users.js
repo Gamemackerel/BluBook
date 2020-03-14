@@ -295,33 +295,17 @@ exports.addFriend = (req, res) => {
       return res.status(404).json({ error: 'friend already added'});
     } 
 
-    // check if this friend is in the same IP cluster
-    // FOR ABE: I also make sure that two friends are in the same 
-    // subnet. if they are, we can make them friends. if they are not, then 
-    // i send a json error response saying the two friends were
-    // not in the same cluster.
-    db.doc(`/users/${req.params.userHandle}`).get()
-    .then(potentialFriend => {
-      if (sameCluster(doc.data().ipAddress, potentialFriend.data().ipAddress)) {
-        // update this user's friends' list with req.params.handle
-        db.doc(`/users/${req.user.handle}`)
-        .update({
-          friends: doc.data().friends.concat(req.params.userHandle)
-        })
-        .then(() => {
-          return res.json({ message: 'friend added!' });
-        })
-        .catch(err => {
-          console.error(err);
-          return res.status(500).json({ error: err.code });
-        })
-      } else {
-        return res.status(404).json({error: "The person you want to be friends with is not in the same cluster!"});
-      }
+    // update this user's friends' list with req.params.handle
+    db.doc(`/users/${req.user.handle}`)
+    .update({
+      friends: doc.data().friends.concat(req.params.userHandle)
+    })
+    .then(() => {
+      return res.json({ message: 'friend added!' });
     })
     .catch(err => {
       console.error(err);
-      return res.status(500).json({error: err.code});
+      return res.status(500).json({ error: err.code });
     })
   })
   .catch(err => {
