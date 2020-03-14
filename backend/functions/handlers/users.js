@@ -2,10 +2,6 @@ const { admin, db } = require('../util/admin');
 
 const config = require('../util/config');
 
-const publicIp = require('public-ip');
-const geolib = require('geolib');
-var geoip = require('geoip-lite');
-
 const firebase = require('firebase');
 firebase.initializeApp(config);
 
@@ -339,9 +335,7 @@ exports.getFriends = (req, res) => {
   console.log("here");
   db.doc(`/users/${req.params.userHandle}`).get()
   .then(currentUser => {
-
-    return currentUser.data().friends;
-
+    return res.json(currentUser.data().friends);
   })
   .catch(err => {
     console.log(err);
