@@ -12,7 +12,8 @@ import {
   STOP_LOADING_UI,
   SUBMIT_COMMENT,
   ADD_FRIEND,
-  REMOVE_FRIEND
+  REMOVE_FRIEND,
+  GET_FRIENDS
 } from '../types';
 import axios from 'axios';
 
@@ -113,6 +114,24 @@ export const removeFriend = (handle) => (dispatch) => {
       });
     })
     .catch((err) => console.log(err));
+};
+// Get friends
+export const getFriends = (handle) => (dispatch) => {
+  dispatch({ type: LOADING_DATA });
+  axios
+    .get(`/user/${handle}/getfriends`)
+    .then((res) => {
+      dispatch({
+        type: GET_FRIENDS,
+        payload: res.data
+      });
+    })
+    .catch((err) => {
+      dispatch({
+        type: GET_FRIENDS,
+        payload: []
+      });
+    });
 };
 // Submit a comment
 export const submitComment = (screamId, commentData) => (dispatch) => {
