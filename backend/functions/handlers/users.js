@@ -2,10 +2,6 @@ const { admin, db } = require('../util/admin');
 
 const config = require('../util/config');
 
-const publicIp = require('public-ip');
-const geolib = require('geolib');
-var geoip = require('geoip-lite');
-
 const firebase = require('firebase');
 firebase.initializeApp(config);
 
@@ -196,7 +192,7 @@ exports.getAuthenticatedUser = (req, res) => {
           read: doc.data().read,
           notificationId: doc.id
         });
-      });
+      })
       return res.json(userData);
     })
     .catch((err) => {
@@ -314,7 +310,7 @@ exports.addFriend = (req, res) => {
           friends: doc.data().friends.concat(req.params.userHandle)
         })
         .then(() => {
-          return res.json({ message: 'friend added!' });
+          return res.json({ friend: req.params.userHandle });
         })
         .catch(err => {
           console.error(err);
@@ -335,13 +331,54 @@ exports.addFriend = (req, res) => {
   })
 }
 
+exports.removeFriend = (req, res) => {
+  db.doc(`/users/${req.user.handle}`).get()
+  .then(ourDoc => {
+
+    if (ourDoc.data().friends.includes(`${req.params.userHandle}`)) {
+      db.doc(`/users/${req.user.handle}`)
+      .update({
+        friends: ourDoc.data().friends.filter(friend => friend != `${req.params.userHandle}`)
+      })
+      .then(() => {
+        db.doc(`/users/${req.params.userHandle}`).get()
+        .then(friendDoc => {
+          db.doc(`/users/${req.params.userHandle}`)
+          .update({
+            friends: friendDoc.data().friends.filter(friend => friend != `${req.user.handle}`)
+          })
+          .then(() => {
+            return res.json({ friend: req.params.userHandle });
+          })
+          .catch(err => {
+            console.error(err);
+            return res.status(500).json({ error: err.code });
+          });
+        })
+        .catch(err => {
+          console.error(err);
+          return res.status(500).json({ error: err.code });
+        })
+      })
+      .catch(err => {
+        console.error(err);
+        return res.status(500).json({ error: err.code });
+      })
+    } else {
+      return res.status(404).json({error: "The friend you want to remove is not in your friends list."});
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    return res.status(500).json({ error: err.code });
+  })
+}
+
 exports.getFriends = (req, res) => {
   console.log("here");
   db.doc(`/users/${req.params.userHandle}`).get()
   .then(currentUser => {
-
-    return currentUser.data().friends;
-
+    return res.json(currentUser.data().friends);
   })
   .catch(err => {
     console.log(err);
