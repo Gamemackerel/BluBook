@@ -18,6 +18,8 @@ import home from './pages/home';
 import login from './pages/login';
 import signup from './pages/signup';
 import user from './pages/user';
+import musicroom from './pages/musicroom';
+
 
 import axios from 'axios';
 
@@ -40,6 +42,7 @@ if (token) {
 }
 
 class App extends Component {
+
   render() {
     return (
       <MuiThemeProvider theme={theme}>
@@ -57,6 +60,7 @@ class App extends Component {
                   path="/users/:handle/scream/:screamId"
                   component={user}
                 />
+                <Route exact path="/musicroom" component={musicroom} />
               </Switch>
             </div>
           </Router>

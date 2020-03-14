@@ -25,6 +25,30 @@ exports.getAllScreams = (req, res) => {
     });
 };
 
+exports.getAllMusic = (req, res) => {
+  db.collection('music')
+    .orderBy('audioName', 'desc')
+    .get()
+    .then((data) => {
+      let musicCollection = [];
+      data.forEach((doc) => {
+        musicCollection.push({
+          audioId: doc.id,
+          userHandle: doc.data().userHandle,
+          audioName: doc.data().audioName,
+          musicUrl: doc.data().musicUrl,
+          audioAuthor: doc.data().audioAuthor
+        });
+      });
+      return res.json(musicCollection);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
+    });
+};
+
+
 exports.postOneScream = (req, res) => {
   if (req.body.body.trim() === '') {
     return res.status(400).json({ body: 'Body must not be empty' });

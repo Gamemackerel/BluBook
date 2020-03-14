@@ -14,7 +14,8 @@ const {
   commentOnScream,
   likeScream,
   unlikeScream,
-  deleteScream
+  deleteScream,
+  getAllMusic
 } = require('./handlers/screams');
 const {
   signup,
@@ -27,7 +28,11 @@ const {
   addFriend,
   getFriends,
   removeFriend
+  uploadMusic,
+  uploadMusic1
 } = require('./handlers/users');
+
+var selectedFile;
 
 // Scream routes
 app.get('/screams', getAllScreams);
@@ -46,11 +51,16 @@ app.post('/user', FBAuth, addUserDetails);
 app.get('/user', FBAuth, getAuthenticatedUser);
 app.get('/user/:handle', getUserDetails);
 app.post('/notifications', FBAuth, markNotificationsRead);
+app.post('/user/music', FBAuth, uploadMusic);
 
 // friendship routes
 app.post('/user/:userHandle/addfriend', FBAuth, addFriend);
 app.get('/user/:userHandle/getfriends', FBAuth, getFriends);
 app.post('/user/:userHandle/removefriend', FBAuth, removeFriend);
+
+// music routes
+app.post('/user/music1', FBAuth, uploadMusic1);
+app.get('/playlist', getAllMusic);
 
 exports.api = functions.region('us-central1').https.onRequest(app);
 

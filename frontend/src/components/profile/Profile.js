@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from 'react-router-dom';
@@ -18,14 +18,22 @@ import CalendarToday from '@material-ui/icons/CalendarToday';
 import EditIcon from '@material-ui/icons/Edit';
 import KeyboardReturn from '@material-ui/icons/KeyboardReturn';
 //Redux
-import { connect } from 'react-redux';
+import { connect, useStore } from 'react-redux';
 import { logoutUser, uploadImage } from '../../redux/actions/userActions';
 
 const styles = (theme) => ({
   ...theme
 });
 
+const onChange = event => {
+  this.ListeningStateChangedEvent({
+    file: event.target.files[0],
+    fileName: event.target.files[0].name
+  });
+};
+
 class Profile extends Component {
+
   handleImageChange = (event) => {
     const image = event.target.files[0];
     const formData = new FormData();
@@ -39,6 +47,7 @@ class Profile extends Component {
   handleLogout = () => {
     this.props.logoutUser();
   };
+
   render() {
     const {
       classes,
@@ -61,6 +70,7 @@ class Profile extends Component {
                 hidden="hidden"
                 onChange={this.handleImageChange}
               />
+          
               <MyButton
                 tip="Edit profile picture"
                 onClick={this.handleEditPicture}
@@ -144,6 +154,7 @@ const mapStateToProps = (state) => ({
   user: state.user
 });
 
+
 const mapActionsToProps = { logoutUser, uploadImage };
 
 Profile.propTypes = {
@@ -154,6 +165,6 @@ Profile.propTypes = {
 };
 
 export default connect(
-  mapStateToProps,
+  mapStateToProps,  
   mapActionsToProps
 )(withStyles(styles)(Profile));

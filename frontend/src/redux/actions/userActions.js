@@ -76,6 +76,18 @@ export const uploadImage = (formData) => (dispatch) => {
     .catch((err) => console.log(err));
 };
 
+////
+export const uploadMusic = (formData) => (dispatch) => {
+  dispatch({ type: LOADING_USER });
+  axios
+    .post('/user/music1', formData)
+    .then(() => {
+      dispatch(getUserData());
+    })
+    .catch((err) => console.log(err));
+};
+////
+
 export const editUserDetails = (userDetails) => (dispatch) => {
   dispatch({ type: LOADING_USER });
   axios

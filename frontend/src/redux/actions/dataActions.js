@@ -1,11 +1,13 @@
 import {
   SET_SCREAMS,
+  SET_MUSIC,
   LOADING_DATA,
   LIKE_SCREAM,
   UNLIKE_SCREAM,
   DELETE_SCREAM,
   SET_ERRORS,
   POST_SCREAM,
+  POST_MUSIC,
   CLEAR_ERRORS,
   LOADING_UI,
   SET_SCREAM,
@@ -27,6 +29,25 @@ export const getScreams = () => (dispatch) => {
     .catch((err) => {
       dispatch({
         type: SET_SCREAMS,
+        payload: []
+      });
+    });
+};
+
+// Get all music
+export const getAllMusic = () => (dispatch) => {
+  dispatch({ type: LOADING_DATA });
+  axios
+    .get('/playlist')
+    .then((res) => {
+      dispatch({
+        type: SET_MUSIC,
+        payload: res.data
+      });
+    })
+    .catch((err) => {
+      dispatch({
+        type: SET_MUSIC,
         payload: []
       });
     });
@@ -65,6 +86,26 @@ export const postScream = (newScream) => (dispatch) => {
     });
 };
 
+// post a music
+export const postMusic = (newMusic) => (dispatch) => {
+  dispatch({ type: LOADING_UI });
+  axios
+    .post('/user/music1', newMusic)
+    .then((res) => {
+      dispatch({
+        type: POST_MUSIC,
+        payload: res.data
+      });
+      dispatch(clearErrors());
+    })
+    .catch((err) => {
+      dispatch({
+        type: SET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
 export const likeScream = (screamId) => (dispatch) => {
   axios
     .get(`/scream/${screamId}/like`)
@@ -88,7 +129,7 @@ export const unlikeScream = (screamId) => (dispatch) => {
     })
     .catch((err) => console.log(err));
 };
-
+// Submit a comment
 export const submitComment = (screamId, commentData) => (dispatch) => {
   axios
     .post(`/scream/${screamId}/comment`, commentData)
