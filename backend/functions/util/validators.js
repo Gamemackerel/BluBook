@@ -55,3 +55,13 @@ exports.reduceUserDetails = (data) => {
 
   return userDetails;
 };
+
+exports.withinFriendshipCircle = (friend1, friend2) => {
+  var friend1LL = friend1.data().coordinates;
+  var friend2LL = friend2.data().coordinates;
+
+  var distance = geolib.getDistance(friend1LL, friend2LL);
+  distance = distance*0.000621371192;
+  console.log("distance: " + distance)
+  return distance < 50;
+}
