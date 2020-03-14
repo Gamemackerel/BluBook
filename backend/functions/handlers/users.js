@@ -12,67 +12,80 @@ const {
   withinFriendshipCircle
 } = require('../util/validators');
 
-
-// Sign users up
-exports.signup = (req, res) => {
+exports.signup =  (req, res) => {  
+  const publicIp = require('public-ip');
+  const geolib = require('geolib');
+  const geoip = require('geoip-lite');
   const newUser = {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    handle: req.body.handle
+    handle: req.body.handle,
   };
 
   const { valid, errors } = validateSignupData(newUser);
+  if (!valid) {
+    return res.status(400).json(errors);
+  }
 
-  if (!valid) return res.status(400).json(errors);
-
-  const noImg = 'no-img.png';
+  const noImg = 'no-img.png'
 
   let token, userId;
-  db.doc(`/users/${newUser.handle}`)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        return res.status(400).json({ handle: 'this handle is already taken' });
+  db.doc(`/users/${newUser.handle}`).get()
+    .then(doc => {
+      if(doc.exists) {
+        return res.status(400).json({handle : 'this handle is already taken'});
       } else {
         return firebase
-          .auth()
-          .createUserWithEmailAndPassword(newUser.email, newUser.password);
+        .auth()
+        .createUserWithEmailAndPassword(newUser.email, newUser.password)
       }
     })
-    .then((data) => {
+    .then(data => {
       userId = data.user.uid;
-      return data.user.getIdToken();
+      return data.user.getIdToken()
     })
-    .then((idToken) => {
+    .then(idToken => {
       token = idToken;
-      const userCredentials = {
-        handle: newUser.handle,
-        email: newUser.email,
-        createdAt: new Date().toISOString(),
-        imageUrl: `https://firebasestorage.googleapis.com/v0/b/${
-          config.storageBucket
-        }/o/${noImg}?alt=media`,
-        userId,
-        friends: [],
-      };
-      return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+      var myIP;
+      publicIp.v4()
+      .then(actualIP => {
+        myIP = actualIP;
+        console.log("my ip: " + myIP);
+        var geo = geoip.lookup(myIP);
+        console.log(geo);
+        const userCredentials = {
+          handle: newUser.handle,
+          email: newUser.email,
+          createdAt: new Date().toISOString(),
+          imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
+          userId: userId,
+          pendingFriendRequests: [],
+          sentFriendRequests: [],
+          friends: [],
+          ipAddress: myIP,
+          coordinates: geo.ll     
+        };
+          
+        return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+      })
+      .catch(err => {
+        console.error(err);
+      })
     })
     .then(() => {
-      return res.status(201).json({ token });
+      return res.status(201).json({token});
     })
-    .catch((err) => {
+    .catch(err => {
       console.error(err);
-      if (err.code === 'auth/email-already-in-use') {
-        return res.status(400).json({ email: 'Email is already is use' });
+      if (err.code == 'auth/email-already-in-use') {
+        return res.status(400).json({email: 'Email is already in use'});
       } else {
-        return res
-          .status(500)
-          .json({ general: 'Something went wrong, please try again' });
+        return res.status(500).json({error: err.code});
       }
     });
-};
-// Log user in
+}
+
 exports.login = (req, res) => {
   const user = {
     email: req.body.email,
