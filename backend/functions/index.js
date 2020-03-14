@@ -27,7 +27,7 @@ const {
   markNotificationsRead,
   addFriend,
   getFriends,
-  removeFriend
+  removeFriend,
   uploadMusic,
   uploadMusic1
 } = require('./handlers/users');
