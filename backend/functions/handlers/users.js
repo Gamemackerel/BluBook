@@ -9,7 +9,7 @@ const {
   validateSignupData,
   validateLoginData,
   reduceUserDetails,
-  withinFriendshipCircle
+  validateUploadMusic
 } = require('../util/validators');
 
 exports.signup =  (req, res) => {  
@@ -129,7 +129,6 @@ exports.addUserDetails = (req, res) => {
       return res.status(500).json({ error: err.code });
     });
 };
-
 // Get any user's details
 exports.getUserDetails = (req, res) => {
   let userData = {};
@@ -286,7 +285,145 @@ exports.markNotificationsRead = (req, res) => {
     });
 };
 
+exports.uploadMusic = (req, res) => {
+  const BusBoy = require('busboy');
+  const path = require('path');
+  const os = require('os');
+  const fs = require('fs');
 
+  const busboy = new BusBoy({ headers: req.headers });
+
+  let musicToBeUploaded = {};
+  let musicFileName;
+
+  busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+    console.log(fieldname, file, filename, encoding, mimetype);
+    if (mimetype !== 'audio/mp3') {
+      return res.status(400).json({ error: 'Wrong file type submitted' });
+    }
+    // my.image.png => ['my', 'image', 'png']
+    const musicExtension = filename.split('.')[filename.split('.').length - 1];
+    // 32756238461724837.png
+    musicFileName = `${Math.round(
+      Math.random() * 1000000000000
+    ).toString()}.${musicExtension}`;
+    const filepath = path.join(os.tmpdir(), musicFileName);
+    musicToBeUploaded = { filepath, mimetype };
+    file.pipe(fs.createWriteStream(filepath));
+  });
+  busboy.on('finish', () => {
+    admin
+      .storage()
+      .bucket()
+      .upload(musicToBeUploaded.filepath, {
+        resumable: false,
+        metadata: {
+          metadata: {
+            contentType: musicToBeUploaded.mimetype
+          }
+        }
+      })
+      .then(() => {
+        const musicUrl = `https://firebasestorage.googleapis.com/v0/b/${
+          config.storageBucket
+        }/o/${musicFileName}?alt=media`;
+        return db.doc(`/users/${req.user.handle}`).update({ musicUrl });
+      })
+      .then(() => {
+        return res.json({ message: 'Music uploaded successfully' });
+      })
+      .catch((err) => {
+        console.error(err);
+        return res.status(500).json({ error: 'something went wrong' });
+      });
+  });
+  busboy.end(req.rawBody);
+};
+
+exports.uploadMusic1 = (req, res) => {
+
+  const BusBoy = require('busboy');
+  const path = require('path');
+  const os = require('os');
+  const fs = require('fs');
+  
+  const busboy = new BusBoy({ headers: req.headers });
+  
+  console.log(req.body);
+
+  let musicToBeUploaded = {};
+  let musicFileName;
+  let musicName = req.headers.name;
+  let musicAuthor = req.headers.author;
+  let userName = req.headers.handle;
+
+  const vadHeaders = {
+    musicName,
+    musicAuthor,
+    userName
+  }
+
+  const { errors, valid } = validateUploadMusic(vadHeaders);
+
+  if (!valid) return res.status(400).json(errors);
+
+  busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+    console.log(fieldname, file, filename, encoding, mimetype);
+    
+    if (mimetype !== 'audio/mpeg' && mimetype !== 'audio/mp3') {
+      let newErr = {};
+      newErr.fileselect = 'Wrong file type submitted';
+      return res.status(400).json(newErr);
+    }
+    // my.image.png => ['my', 'image', 'png']
+    const musicExtension = filename.split('.')[filename.split('.').length - 1];
+    // 32756238461724837.png
+    musicFileName = `${Math.round(
+      Math.random() * 1000000000000
+    ).toString()}.${musicExtension}`;
+    const filepath = path.join(os.tmpdir(), musicFileName);
+    musicToBeUploaded = { filepath, mimetype };
+    file.pipe(fs.createWriteStream(filepath));
+  });
+  
+  busboy.on('finish', () => {
+    admin
+      .storage()
+      .bucket()
+      .upload(musicToBeUploaded.filepath, {
+        resumable: false,
+        metadata: {
+          metadata: {
+            contentType: musicToBeUploaded.mimetype
+          }
+        }
+      })
+      .then(() => {
+        const musicUrl = `https://firebasestorage.googleapis.com/v0/b/${
+            config.storageBucket
+          }/o/${musicFileName}?alt=media`;
+        const newAudio = {
+            audioId: musicFileName,
+            musicUrl: musicUrl,
+            userHandle: userName,
+            audioName: musicName,
+            audioAuthor: musicAuthor
+          };
+          db.collection('music')
+          .add(newAudio)
+          .then((doc) => {
+            const resAudio = newAudio;
+            resAudio.Id = doc.id;
+            res.json(resAudio);
+          })
+          .catch((err) => {
+            res.status(500).json({ userName });
+            console.error(err);
+          });
+      });
+  });
+  busboy.end(req.rawBody);
+};
 
 /* 
   This method takes the user handle of the person you want to add as an argument 
@@ -309,14 +446,10 @@ exports.addFriend = (req, res) => {
       return res.status(404).json({ error: 'friend already added'});
     } 
 
-    // check if this friend is in the same IP cluster
-    // FOR ABE: I also make sure that two friends are in the same 
-    // area. if they are, we can make them friends. if they are not, then 
-    // i send a json error response saying the two friends were
-    // not near each other.
+    
     db.doc(`/users/${req.params.userHandle}`).get()
     .then(potentialFriend => {
-      if (withinFriendshipCircle(doc, potentialFriend)) {
+      if (true) {
         // update this user's friends' list with req.params.handle
         db.doc(`/users/${req.user.handle}`)
         .update({

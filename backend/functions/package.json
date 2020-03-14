@@ -17,10 +17,7 @@
     "express": "^4.16.4",
     "firebase": "^5.9.0",
     "firebase-admin": "~7.0.0",
-    "firebase-functions": "^3.1.0",
-    "geoip-lite": "^1.4.0",
-    "geolib": "^3.2.1",
-    "public-ip": "^4.0.0"
+    "firebase-functions": "^3.3.0"
   },
   "private": true
 }

@@ -11,6 +11,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 // Icons
 import HomeIcon from '@material-ui/icons/Home';
+import LibraryMusicIcon from '@material-ui/icons/LibraryMusic';
 
 class Navbar extends Component {
   render() {
@@ -26,6 +27,11 @@ class Navbar extends Component {
                   <HomeIcon />
                 </MyButton>
               </Link>
+              <Link to="/musicroom">
+                <MyButton tip="Musicroom">
+                  <LibraryMusicIcon />
+                </MyButton>
+              </Link>
               <Notifications />
             </Fragment>
           ) : (
@@ -38,6 +44,9 @@ class Navbar extends Component {
               </Button>
               <Button color="inherit" component={Link} to="/signup">
                 Signup
+              </Button>
+              <Button color="inherit" component={Link} to="/musicroom">
+                MusicRoom
               </Button>
             </Fragment>
           )}

@@ -29,6 +29,22 @@ exports.validateSignupData = (data) => {
   };
 };
 
+exports.validateUploadMusic = (headers) => {
+  let errors ={};
+  let musicName = headers.musicName;
+  let musicAuthor = headers.musicAuthor;
+  let userName = headers.userName;
+  if (isEmpty(musicName)) errors.musicname = 'Must not be empty';
+  if (isEmpty(musicAuthor)) errors.musicauthor = 'Must not be empty';
+  if (isEmpty(userName)) errors.userhandle = 'Must not be empty';
+
+  return {
+    errors,
+    valid: Object.keys(errors).length === 0 ? true : false
+  }
+}
+
+
 exports.validateLoginData = (data) => {
   let errors = {};
 
@@ -55,13 +71,3 @@ exports.reduceUserDetails = (data) => {
 
   return userDetails;
 };
-
-exports.withinFriendshipCircle = (friend1, friend2) => {
-  var friend1LL = friend1.data().coordinates;
-  var friend2LL = friend2.data().coordinates;
-
-  var distance = geolib.getDistance(friend1LL, friend2LL);
-  distance = distance*0.000621371192;
-  console.log("distance: " + distance)
-  return distance < 50;
-}
