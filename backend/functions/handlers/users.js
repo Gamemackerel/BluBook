@@ -334,3 +334,17 @@ exports.addFriend = (req, res) => {
     return res.status(500).json({ error: err.code });
   })
 }
+
+exports.getFriends = (req, res) => {
+  console.log("here");
+  db.doc(`/users/${req.params.userHandle}`).get()
+  .then(currentUser => {
+
+    return currentUser.data().friends;
+
+  })
+  .catch(err => {
+    console.log(err);
+    return res.status(500).json({ error: err.code });
+  })
+}
