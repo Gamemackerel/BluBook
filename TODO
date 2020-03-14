@@ -1,0 +1,11 @@
+TODO
+Add api function 'requestFriend' and backend logic for adding friends
+	- 'request' collection
+	- Add request to db, then wait, look for sister request (use trigger?)
+	- if sister request found, and friendship doesn't exist, create friendship object in db
+	- either way delete request (finally)
+
+Add frontend display for friends list / count
+Frontend: only display screams from friends
+Frontend: make friend button
+Frontend: bluetooth handshake to exchange user https://developers.google.com/web/updates/2015/07/interact-with-ble-devices-on-the-web
