@@ -32,16 +32,16 @@ export class FriendButton extends Component {
     const { authenticated } = this.props.user;
     const FriendButton = !authenticated ? (
       <Link to="/login">
-        <MyButton tip="Like">
+        <MyButton tip="Add Friend">
           <FavoriteBorder color="primary" />
         </MyButton>
       </Link>
     ) : this.alreadyFriends() ? (
-      <MyButton tip="Undo like" onClick={this.removeFriend}>
+      <MyButton tip="Remove Friend" onClick={this.removeFriend}>
         <FavoriteIcon color="primary" />
       </MyButton>
     ) : (
-      <MyButton tip="Like" onClick={this.addFriend}>
+      <MyButton tip="Add Friend" onClick={this.addFriend}>
         <FavoriteBorder color="primary" />
       </MyButton>
     );
