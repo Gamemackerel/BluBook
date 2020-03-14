@@ -296,14 +296,10 @@ exports.addFriend = (req, res) => {
       return res.status(404).json({ error: 'friend already added'});
     } 
 
-    // check if this friend is in the same IP cluster
-    // FOR ABE: I also make sure that two friends are in the same 
-    // area. if they are, we can make them friends. if they are not, then 
-    // i send a json error response saying the two friends were
-    // not near each other.
+    
     db.doc(`/users/${req.params.userHandle}`).get()
     .then(potentialFriend => {
-      if (withinFriendshipCircle(doc, potentialFriend)) {
+      if (true) {
         // update this user's friends' list with req.params.handle
         db.doc(`/users/${req.user.handle}`)
         .update({
