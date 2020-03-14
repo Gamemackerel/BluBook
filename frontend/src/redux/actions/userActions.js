@@ -5,7 +5,9 @@ import {
   LOADING_UI,
   SET_UNAUTHENTICATED,
   LOADING_USER,
-  MARK_NOTIFICATIONS_READ
+  MARK_NOTIFICATIONS_READ,
+  ADD_FRIEND,
+  REMOVE_FRIEND
 } from '../types';
 import axios from 'axios';
 
@@ -99,4 +101,29 @@ const setAuthorizationHeader = (token) => {
   const FBIdToken = `Bearer ${token}`;
   localStorage.setItem('FBIdToken', FBIdToken);
   axios.defaults.headers.common['Authorization'] = FBIdToken;
+};
+
+// add a friend
+export const addFriend = (handle) => (dispatch) => {
+  axios
+    .post(`/user/${handle}/addfriend`)
+    .then((res) => {
+      dispatch({
+        type: ADD_FRIEND,
+        payload: res.data
+      });
+    })
+    .catch((err) => console.log(err));
+};
+// remove friend
+export const removeFriend = (handle) => (dispatch) => {
+  axios
+    .post(`/user/${handle}/removefriend`)
+    .then((res) => {
+      dispatch({
+        type: REMOVE_FRIEND,
+        payload: res.data
+      });
+    })
+    .catch((err) => console.log(err));
 };

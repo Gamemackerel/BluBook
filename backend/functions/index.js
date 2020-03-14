@@ -49,6 +49,7 @@ app.post('/notifications', FBAuth, markNotificationsRead);
 // friendship routes
 app.post('/user/:userHandle/addfriend', FBAuth, addFriend);
 app.get('/user/:userHandle/getfriends', FBAuth, getFriends);
+// app.post('/user/:userHandle/removefriend', FBAuth, removeFriend);
 
 exports.api = functions.region('us-central1').https.onRequest(app);
 

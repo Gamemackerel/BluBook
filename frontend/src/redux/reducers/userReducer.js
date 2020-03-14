@@ -5,7 +5,9 @@ import {
   LOADING_USER,
   LIKE_SCREAM,
   UNLIKE_SCREAM,
-  MARK_NOTIFICATIONS_READ
+  MARK_NOTIFICATIONS_READ,
+  ADD_FRIEND,
+  REMOVE_FRIEND
 } from '../types';
 
 const initialState = {
@@ -13,7 +15,8 @@ const initialState = {
   loading: false,
   credentials: {},
   likes: [],
-  notifications: []
+  notifications: [],
+  friends: []
 };
 
 export default function(state = initialState, action) {
@@ -52,6 +55,21 @@ export default function(state = initialState, action) {
         ...state,
         likes: state.likes.filter(
           (like) => like.screamId !== action.payload.screamId
+        )
+      };
+    case ADD_FRIEND:
+      return {
+        ...state,
+        friends: [
+          ...state.friends,
+          action.payload.friend
+        ]
+      };
+    case REMOVE_FRIEND:
+      return {
+        ...state,
+        friends: state.friends.filter(
+          (friend) => friend !== action.payload.friend
         )
       };
     case MARK_NOTIFICATIONS_READ:

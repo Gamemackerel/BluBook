@@ -10,14 +10,10 @@ import {
   LOADING_UI,
   SET_SCREAM,
   STOP_LOADING_UI,
-  SUBMIT_COMMENT,
-  ADD_FRIEND,
-  REMOVE_FRIEND,
-  GET_FRIENDS
+  SUBMIT_COMMENT
 } from '../types';
 import axios from 'axios';
 
-// Get all screams
 export const getScreams = () => (dispatch) => {
   dispatch({ type: LOADING_DATA });
   axios
@@ -35,6 +31,7 @@ export const getScreams = () => (dispatch) => {
       });
     });
 };
+
 export const getScream = (screamId) => (dispatch) => {
   dispatch({ type: LOADING_UI });
   axios
@@ -48,7 +45,7 @@ export const getScream = (screamId) => (dispatch) => {
     })
     .catch((err) => console.log(err));
 };
-// Post a scream
+
 export const postScream = (newScream) => (dispatch) => {
   dispatch({ type: LOADING_UI });
   axios
@@ -67,7 +64,7 @@ export const postScream = (newScream) => (dispatch) => {
       });
     });
 };
-// Like a scream
+
 export const likeScream = (screamId) => (dispatch) => {
   axios
     .get(`/scream/${screamId}/like`)
@@ -79,7 +76,7 @@ export const likeScream = (screamId) => (dispatch) => {
     })
     .catch((err) => console.log(err));
 };
-// Unlike a scream
+
 export const unlikeScream = (screamId) => (dispatch) => {
   axios
     .get(`/scream/${screamId}/unlike`)
@@ -91,49 +88,7 @@ export const unlikeScream = (screamId) => (dispatch) => {
     })
     .catch((err) => console.log(err));
 };
-// add a friend
-export const addFriend = (handle) => (dispatch) => {
-  axios
-    .post(`/user/${handle}/addfriend`)
-    .then((res) => {
-      dispatch({
-        type: ADD_FRIEND,
-        payload: res.data
-      });
-    })
-    .catch((err) => console.log(err));
-};
-// remove friend
-export const removeFriend = (handle) => (dispatch) => {
-  axios
-    .post(`/user/${handle}/removefriend`)
-    .then((res) => {
-      dispatch({
-        type: REMOVE_FRIEND,
-        payload: res.data
-      });
-    })
-    .catch((err) => console.log(err));
-};
-// Get friends
-export const getFriends = (handle) => (dispatch) => {
-  dispatch({ type: LOADING_DATA });
-  axios
-    .get(`/user/${handle}/getfriends`)
-    .then((res) => {
-      dispatch({
-        type: GET_FRIENDS,
-        payload: res.data
-      });
-    })
-    .catch((err) => {
-      dispatch({
-        type: GET_FRIENDS,
-        payload: []
-      });
-    });
-};
-// Submit a comment
+
 export const submitComment = (screamId, commentData) => (dispatch) => {
   axios
     .post(`/scream/${screamId}/comment`, commentData)

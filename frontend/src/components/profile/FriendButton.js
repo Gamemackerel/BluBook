@@ -5,16 +5,14 @@ import PropTypes from 'prop-types';
 // Icons
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
-// REdux
+// Redux
 import { connect } from 'react-redux';
-import { addFriend, removeFriend, getFriends } from '../../redux/actions/dataActions';
+import { addFriend, removeFriend } from '../../redux/actions/userActions';
 
 export class FriendButton extends Component {
   alreadyFriends = () => {
-    const myHandle = this.props.user.credentials.handle
-    const friends = this.props.getFriends(myHandle)
-    console.log(myHandle)
-    console.log(friends)
+    // friends = store
+    const friends = this.props.user.credentials.friends
     if (
       friends &&
       friends.find(
@@ -56,7 +54,6 @@ FriendButton.propTypes = {
   handle: PropTypes.string.isRequired,
   addFriend: PropTypes.func.isRequired,
   removeFriend: PropTypes.func.isRequired,
-  getFriends: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -66,7 +63,6 @@ const mapStateToProps = (state) => ({
 const mapActionsToProps = {
   addFriend,
   removeFriend,
-  getFriends
 };
 
 export default connect(
