@@ -11,8 +11,8 @@ import { addFriend, removeFriend } from '../../redux/actions/userActions';
 
 export class FriendButton extends Component {
   alreadyFriends = () => {
-    // friends = store
     const friends = this.props.user.credentials.friends
+    console.log(friends)
     if (
       friends &&
       friends.find(

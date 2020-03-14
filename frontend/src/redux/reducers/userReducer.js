@@ -58,20 +58,32 @@ export default function(state = initialState, action) {
         )
       };
     case ADD_FRIEND:
-      return {
+      let newstate = {
         ...state,
-        friends: [
-          ...state.friends,
-          action.payload.friend
-        ]
+        credentials: {
+          ...state.credentials,
+          friends: [
+            ...state.credentials.friends,
+            action.payload.friend
+          ]
+        }
       };
+      console.log('friend added', newstate)
+      return newstate;
     case REMOVE_FRIEND:
-      return {
+      let _newstate = {
         ...state,
-        friends: state.friends.filter(
-          (friend) => friend !== action.payload.friend
-        )
+        credentials: {
+          ...state.credentials,
+          friends: [
+            state.credentials.friends.filter(
+              (friend) => friend !== action.payload.friend
+            )
+          ]
+        }
       };
+      console.log('friend removed', _newstate)
+      return _newstate;
     case MARK_NOTIFICATIONS_READ:
       state.notifications.forEach((not) => (not.read = true));
       return {
