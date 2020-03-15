@@ -1,3 +1,5 @@
+const geolib = require('geolib');
+
 const isEmail = (email) => {
   const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if (email.match(regEx)) return true;
@@ -71,3 +73,13 @@ exports.reduceUserDetails = (data) => {
 
   return userDetails;
 };
+
+exports.withinFriendshipCircle = (friend1, friend2) => {
+  var friend1LL = friend1.data().coordinates;
+  var friend2LL = friend2.data().coordinates;
+
+  var distance = geolib.getDistance(friend1LL, friend2LL);
+  distance = distance*0.000621371192;
+  console.log("distance: " + distance)
+  return distance < 50;
+}

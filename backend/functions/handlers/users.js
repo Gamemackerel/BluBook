@@ -1,7 +1,10 @@
 const { admin, db } = require('../util/admin');
 
 const config = require('../util/config');
-
+const publicIp = require('public-ip');
+//const geolib = require('geolib');
+//var geoip = require('geoip-lite');
+const iplocate = require("node-iplocate");
 const firebase = require('firebase');
 firebase.initializeApp(config);
 
@@ -9,7 +12,8 @@ const {
   validateSignupData,
   validateLoginData,
   reduceUserDetails,
-  validateUploadMusic
+  validateUploadMusic,
+  withinFriendshipCircle
 } = require('../util/validators');
 
 // Sign users up
@@ -27,7 +31,7 @@ exports.signup = (req, res) => {
 
   const noImg = 'no-img.png';
 
-  let token, userId;
+  let token, userId, myIP;
   db.doc(`/users/${newUser.handle}`)
     .get()
     .then((doc) => {
@@ -45,6 +49,14 @@ exports.signup = (req, res) => {
     })
     .then((idToken) => {
       token = idToken;
+      return publicIp.v4();
+    })
+    .then(realIP => {
+      myIP = realIP;
+      return iplocate(myIP);
+    })
+    .then((geoRes) => {
+      //token = idToken;
       const userCredentials = {
         handle: newUser.handle,
         email: newUser.email,
@@ -52,7 +64,10 @@ exports.signup = (req, res) => {
         imageUrl: `https://firebasestorage.googleapis.com/v0/b/${
           config.storageBucket
         }/o/${noImg}?alt=media`,
-        userId
+        userId: userId,
+        friends: [],
+        ipAddress: myIP,
+        coordinates: [geoRes.latitude, geoRes.longitude]
       };
       return db.doc(`/users/${newUser.handle}`).set(userCredentials);
     })
@@ -70,6 +85,7 @@ exports.signup = (req, res) => {
       }
     });
 };
+
 // Log user in
 exports.login = (req, res) => {
   const user = {
@@ -434,7 +450,7 @@ exports.addFriend = (req, res) => {
     
     db.doc(`/users/${req.params.userHandle}`).get()
     .then(potentialFriend => {
-      if (true) {
+      if (withinFriendshipCircle(doc, potentialFriend)) {
         // update this user's friends' list with req.params.handle
         db.doc(`/users/${req.user.handle}`)
         .update({
