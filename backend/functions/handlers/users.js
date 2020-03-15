@@ -1,7 +1,10 @@
 const { admin, db } = require('../util/admin');
 
 const config = require('../util/config');
-
+const publicIp = require('public-ip');
+const geolib = require('geolib');
+//var geoip = require('geoip-lite');
+const iplocate = require("node-iplocate");
 const firebase = require('firebase');
 firebase.initializeApp(config);
 
@@ -45,16 +48,53 @@ exports.signup = (req, res) => {
     })
     .then((idToken) => {
       token = idToken;
-      const userCredentials = {
-        handle: newUser.handle,
-        email: newUser.email,
-        createdAt: new Date().toISOString(),
-        imageUrl: `https://firebasestorage.googleapis.com/v0/b/${
-          config.storageBucket
-        }/o/${noImg}?alt=media`,
-        userId
-      };
-      return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+
+      var myIP;
+      publicIp.v4()
+      .then(actualIP => {
+        myIP = actualIP;
+        console.log("my ip: " + myIP);
+        //var geo = geoip.lookup(myIP);
+        //console.log(geo);
+        iplocate(myIP)
+        .then(res => {
+          
+          console.log(res);
+          const userCredentials = {
+            handle: newUser.handle,
+            email: newUser.email,
+            createdAt: new Date().toISOString(),
+            imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
+            userId: userId,
+            pendingFriendRequests: [],
+            sentFriendRequests: [],
+            friends: [],
+            ipAddress: myIP,
+            coordinates: [res.latitude, res.longitude]    
+          };
+            
+          return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+        })
+        .catch(err => {
+          console.error(err);
+          return res.status(500).json({ error: "iplocate didnt work " + err });
+        })
+      })
+      .catch(err => {
+        console.error(err);
+        return res.status(500).json({ error: "ipv4 didnt work " + err });
+      })
+
+      // const userCredentials = {
+      //   handle: newUser.handle,
+      //   email: newUser.email,
+      //   createdAt: new Date().toISOString(),
+      //   imageUrl: `https://firebasestorage.googleapis.com/v0/b/${
+      //     config.storageBucket
+      //   }/o/${noImg}?alt=media`,
+      //   userId
+      // };
+      // return db.doc(`/users/${newUser.handle}`).set(userCredentials);
     })
     .then(() => {
       return res.status(201).json({ token });
