@@ -30,7 +30,7 @@ exports.signup = (req, res) => {
 
   const noImg = 'no-img.png';
 
-  let token, userId;
+  let token, userId, myIP;
   db.doc(`/users/${newUser.handle}`)
     .get()
     .then((doc) => {
@@ -48,53 +48,27 @@ exports.signup = (req, res) => {
     })
     .then((idToken) => {
       token = idToken;
-
-      var myIP;
-      publicIp.v4()
-      .then(actualIP => {
-        myIP = actualIP;
-        console.log("my ip: " + myIP);
-        //var geo = geoip.lookup(myIP);
-        //console.log(geo);
-        iplocate(myIP)
-        .then(res => {
-          
-          console.log(res);
-          const userCredentials = {
-            handle: newUser.handle,
-            email: newUser.email,
-            createdAt: new Date().toISOString(),
-            imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
-            userId: userId,
-            pendingFriendRequests: [],
-            sentFriendRequests: [],
-            friends: [],
-            ipAddress: myIP,
-            coordinates: [res.latitude, res.longitude]    
-          };
-            
-          return db.doc(`/users/${newUser.handle}`).set(userCredentials);
-        })
-        .catch(err => {
-          console.error(err);
-          return res.status(500).json({ error: "iplocate didnt work " + err });
-        })
-      })
-      .catch(err => {
-        console.error(err);
-        return res.status(500).json({ error: "ipv4 didnt work " + err });
-      })
-
-      // const userCredentials = {
-      //   handle: newUser.handle,
-      //   email: newUser.email,
-      //   createdAt: new Date().toISOString(),
-      //   imageUrl: `https://firebasestorage.googleapis.com/v0/b/${
-      //     config.storageBucket
-      //   }/o/${noImg}?alt=media`,
-      //   userId
-      // };
-      // return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+      return publicIp.v4();
+    })
+    .then(realIP => {
+      myIP = realIP;
+      return iplocate(myIP);
+    })
+    .then((geoRes) => {
+      //token = idToken;
+      const userCredentials = {
+        handle: newUser.handle,
+        email: newUser.email,
+        createdAt: new Date().toISOString(),
+        imageUrl: `https://firebasestorage.googleapis.com/v0/b/${
+          config.storageBucket
+        }/o/${noImg}?alt=media`,
+        userId: userId,
+        friends: [],
+        ipAddress: myIP,
+        coordinates: [geoRes.latitude, geoRes.longitude]
+      };
+      return db.doc(`/users/${newUser.handle}`).set(userCredentials);
     })
     .then(() => {
       return res.status(201).json({ token });
@@ -110,6 +84,7 @@ exports.signup = (req, res) => {
       }
     });
 };
+
 // Log user in
 exports.login = (req, res) => {
   const user = {
