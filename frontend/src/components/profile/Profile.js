@@ -11,6 +11,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import MuiLink from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 // Icons
 import LocationOn from '@material-ui/icons/LocationOn';
 import LinkIcon from '@material-ui/icons/Link';
@@ -22,7 +24,7 @@ import { connect, useStore } from 'react-redux';
 import { logoutUser, uploadImage } from '../../redux/actions/userActions';
 
 const styles = (theme) => ({
-  ...theme
+  ...theme,
 });
 
 const onChange = event => {
@@ -52,7 +54,7 @@ class Profile extends Component {
     const {
       classes,
       user: {
-        credentials: { handle, createdAt, imageUrl, bio, website, location },
+        credentials: { handle, createdAt, imageUrl, bio, website, location, friends },
         loading,
         authenticated
       }
@@ -115,6 +117,24 @@ class Profile extends Component {
               <KeyboardReturn color="primary" />
             </MyButton>
             <EditDetails />
+            <hr/>
+            <Typography variant="h5" color='textSecondary' justify='center'>Friends</Typography>
+            <hr/>
+              { friends.map((friend) => 
+                  (
+                    <Card className={classes.card}>
+                        <Typography
+                          variant="h5"
+                          component={Link}
+                          to={`/users/${friend}`}
+                          color="primary"
+                        >
+                          {friend}
+                        </Typography>
+                    </Card>
+                  ) 
+                )
+              }
           </div>
         </Paper>
       ) : (
