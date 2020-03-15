@@ -6,6 +6,8 @@ Our research has shown that it is not possible currently to maintain a bluetooth
 
 BlueBook is created by Abe Miller, Yokesh Jayakumar, and Mark Zhu for a final project in CSE461: Computer Networks at University of Washington. It is using a freecodecamp.org course: [Full Stack React & Firebase series](https://www.youtube.com/watch?v=RkBfu-W7tt0&list=PLMhAeHCz8S38ryyeMiBPPUnFAiWnoPvWP).
 
+Access webapp here: https://bluebook-5f792.firebaseapp.com/
+
 Instructions for starting frontend webapp locally, using the existing firebase API of https://us-central1-bluebook-5f792.cloudfunctions.net/api:
 
 ## 1: Install packages
