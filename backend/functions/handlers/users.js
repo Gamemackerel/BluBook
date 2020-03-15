@@ -2,7 +2,7 @@ const { admin, db } = require('../util/admin');
 
 const config = require('../util/config');
 const publicIp = require('public-ip');
-const geolib = require('geolib');
+//const geolib = require('geolib');
 //var geoip = require('geoip-lite');
 const iplocate = require("node-iplocate");
 const firebase = require('firebase');
@@ -12,7 +12,8 @@ const {
   validateSignupData,
   validateLoginData,
   reduceUserDetails,
-  validateUploadMusic
+  validateUploadMusic,
+  withinFriendshipCircle
 } = require('../util/validators');
 
 // Sign users up
@@ -449,7 +450,7 @@ exports.addFriend = (req, res) => {
     
     db.doc(`/users/${req.params.userHandle}`).get()
     .then(potentialFriend => {
-      if (true) {
+      if (withinFriendshipCircle(doc, potentialFriend)) {
         // update this user's friends' list with req.params.handle
         db.doc(`/users/${req.user.handle}`)
         .update({
